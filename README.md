@@ -115,3 +115,21 @@ SQLite does not support them and raising an error on them does not make sense:
   will be ignored so that a default value does not need to be provided.
 * When creating an index, `concurrently` and `using` values are silently
   ignored since they do not apply to SQLite.
+
+## More Customized Queries
+
+`Sqlite.Ecto.Query.all/1` supports more custom queries allowing for keywords
+like `select`, `from`, `join`, `where`, `group_by`, `order_by` and `limit`.
+
+For example, based on the previous example, say we wanted all `Weather` models
+that have non-unique `temp_lo` fields. Taking a look at the list of options [here](sqlite_ecto/lib/sqlite_ecto/query.ex),
+we could write it as follows:
+
+```elixir
+def sample_query do
+  query = from w in Weather,
+    group_by: w.temp_lo, having: count(w.temp_lo) > 1
+
+  Repo.all(query)
+end
+```
