@@ -357,7 +357,7 @@ defmodule Sqlite.Ecto.Test do
     query = "posts" |> select([r], r.x) |> normalize
     assert SQL.all(query) == ~s{SELECT p0."x" FROM "posts" AS p0}
 
-    assert_raise ArgumentError, ~r"SQLite requires a model", fn ->
+    assert_raise Ecto.QueryError, ~r"SQLite requires a model", fn ->
       SQL.all from(p in "posts", select: p) |> normalize()
     end
   end
@@ -376,7 +376,7 @@ defmodule Sqlite.Ecto.Test do
   end
 
   test "distinct" do
-    assert_raise ArgumentError, "DISTINCT with multiple columns is not supported by SQLite", fn ->
+    assert_raise Ecto.QueryError, ~r(DISTINCT with multiple columns is not supported by SQLite), fn ->
       query = Model |> distinct([r], r.x) |> select([r], {r.x, r.y}) |> normalize
       SQL.all(query)
     end
@@ -422,7 +422,7 @@ defmodule Sqlite.Ecto.Test do
   end
 
   test "lock" do
-    assert_raise ArgumentError, "locks are not supported by SQLite", fn ->
+    assert_raise Ecto.QueryError, ~r(locks are not supported by SQLite), fn ->
       query = Model |> lock("FOR SHARE NOWAIT") |> select([], 0) |> normalize
       SQL.all(query)
     end
@@ -473,7 +473,7 @@ defmodule Sqlite.Ecto.Test do
     assert SQL.all(query) == ~s{SELECT ltrim(m0."x", ?) FROM "model" AS m0}
 
     query = Model |> select([], fragment(title: 2)) |> normalize
-    assert_raise ArgumentError, "SQLite adapter does not support keyword or interpolated fragments", fn ->
+    assert_raise Ecto.QueryError, ~r(SQLite adapter does not support keyword or interpolated fragments), fn ->
       SQL.all(query)
     end
   end
@@ -502,7 +502,7 @@ defmodule Sqlite.Ecto.Test do
     query = Model |> select([], type(^"601d74e4-a8d3-4b6e-8365-eddb4c893327", Ecto.UUID)) |> normalize
     assert SQL.all(query) == ~s{SELECT CAST (? AS TEXT) FROM "model" AS m0}
 
-    assert_raise ArgumentError, "Array type is not supported by SQLite", fn ->
+    assert_raise Ecto.QueryError, ~r(Array type is not supported by SQLite), fn ->
       query = Model |> select([], type(^[1,2,3], {:array, :integer})) |> normalize
       SQL.all(query)
     end
@@ -661,7 +661,7 @@ defmodule Sqlite.Ecto.Test do
     query = from(m in Model, update: [set: [x: ^0]]) |> normalize(:update_all)
     assert SQL.update_all(query) == ~s{UPDATE "model" SET "x" = ?}
 
-    assert_raise ArgumentError, "JOINS are not supported on UPDATE statements by SQLite", fn ->
+    assert_raise Ecto.QueryError, ~r(JOINS are not supported on UPDATE statements by SQLite), fn ->
       query = Model |> join(:inner, [p], q in Model2, p.x == q.z)
                     |> update([_], set: [x: 0]) |> normalize(:update_all)
       SQL.update_all(query)
@@ -675,7 +675,7 @@ defmodule Sqlite.Ecto.Test do
     query = from(e in Model, where: e.x == 123) |> normalize
     assert SQL.delete_all(query) == ~s{DELETE FROM "model" WHERE ("model"."x" = 123)}
 
-    assert_raise ArgumentError, "JOINS are not supported on DELETE statements by SQLite", fn ->
+    assert_raise Ecto.QueryError, ~r(JOINS are not supported on DELETE statements by SQLite), fn ->
       query = Model |> join(:inner, [p], q in Model2, p.x == q.z) |> normalize
       SQL.delete_all(query)
     end
