@@ -33,7 +33,7 @@ defmodule Sqlite.Ecto.Mixfile do
     [{:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.7", only: :dev},
      {:ecto, "~> 1.1"},
-     {:poison, "~> 1.0"},
+     {:poison, "~> 2.1.0"},
      {:sqlitex, "~> 0.8"}]
   end
 
