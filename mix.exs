@@ -5,7 +5,7 @@ defmodule Sqlite.Ecto.Mixfile do
     [app: :sqlite_ecto,
      version: "1.1.0",
      name: "Sqlite.Ecto",
-     elixir: "~> 1.0",
+     elixir: "~> 1.2",
      deps: deps,
 
      # testing
@@ -30,11 +30,10 @@ defmodule Sqlite.Ecto.Mixfile do
 
   # Dependencies
   defp deps do
-    [{:earmark, "~> 0.1", only: :dev},
-     {:ex_doc, "~> 0.7", only: :dev},
+    [{:ex_doc, "~> 0.14.5", only: :dev},
      {:ecto, "~> 1.1"},
      {:poison, "~> 1.0"},
-     {:sqlitex, "~> 0.8"}]
+     {:sqlitex, "~> 1.0.1"}]
   end
 
   defp description, do: "SQLite3 adapter for Ecto"
